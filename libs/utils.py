@@ -21,6 +21,7 @@
 from __future__ import absolute_import, unicode_literals
 
 import xbmc
+import os
 from xbmcaddon import Addon
 
 try:
@@ -69,3 +70,32 @@ def safe_get(dct, key, default=None):
     if key in dct and dct[key] is not None:
         return dct[key]
     return default
+
+def trailer_log(key, msg, title):
+   
+    addonDataDir = xbmc.translatePath(Addon(ADDON_ID).getAddonInfo('profile'))
+    Logtxt = os.path.join(addonDataDir, "Trailer_log.txt")
+
+    lines =  []
+    found = False
+    try:
+        f = open(Logtxt, "r")
+        lines = f.readlines()
+        f.close()
+    except:   
+        pass
+    if lines:
+        for i, line in enumerate(lines):        
+            if title in line:
+                found = True
+                if not msg in line:
+                    lines[i] = key + msg + title+'\n'
+                    f = open(Logtxt, "w")
+                    f.write("".join(lines))
+                    f.close()
+                break        
+    if not found:
+        f = open(Logtxt, "a")
+        f.write(key + msg + title + "\n")
+        f.close()  
+    return
